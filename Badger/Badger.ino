@@ -1,4 +1,4 @@
-// Uplinkrobotics PCB Rev A testing code
+// Uplinkrobotics Badger 
 //
 //
 // Copyright © 2024 UplinkRobotics LLC
@@ -10,7 +10,7 @@
 #include <ESP32Servo.h>
 #include "driver/ledc.h"
 #include "motor_library.h"
-#include "zeitview.h"
+#include "badger.h"
 #include "ota_updates.h"
 
 /***************************************************************************************************/
@@ -23,9 +23,6 @@ SBUS rxsr(Serial2); //SBUS object
 uint16_t channels[16];
 bool failSafe;
 bool lostFrame;
-
-Servo ext1;  // create servo object to external peripherals
-Servo ext2;
 
 Motors mot; // initialize motors
 Wifi wifi; // initialize wifi code
@@ -48,7 +45,7 @@ float str_alpha = 0.96;
 const float battery_alpha = 0.99;
 
 // Radio channel values mapped into useful numbers
-float thr, str, ext1float, ext2float;
+float thr, str;
 int led2;
  
 // Sensor values
@@ -66,7 +63,7 @@ bool headlights = 0;
 const int deadzone_thr = 6;
 const int deadzone_str = 6;
 
-int loop_timer = 0; // timer for main loop execution
+unsigned long loop_timer = 0; // timer for main loop execution
 
 // wifi update variables
 int update_counter = 0;
@@ -85,11 +82,6 @@ void setup() {
   Serial.begin(115200);     // debug info
 
   rxsr.begin(RXD2, TXD2, true, 100000); // optional parameters for ESP32: RX pin, TX pin, inverse mode, baudrate
-
-  ext1.attach(GIMBAL_SERVO_IO); // attaches servo pin
-  ext1.writeMicroseconds(0); // default position
-  ext2.attach(GIMBAL_SERVO2_IO); // attaches servo pin
-  ext2.writeMicroseconds(0); // default position
 
   pinMode(LEDARRAY_CLK_IO, OUTPUT); // on board indicator LEDs
   pinMode(LEDARRAY_DATA_IO, OUTPUT);
@@ -120,8 +112,6 @@ void loop() {
 
   thr = constrain(map(ch1, LOW_VAL, HIGH_VAL, -105, 105), -100, 100); // throttle
   str = constrain(map(ch2, LOW_VAL, HIGH_VAL, -105, 105), -100, 100); // steering 
-  ext1float = constrain(map(ch3, LOW_VAL, HIGH_VAL, 500, 2500), 500, 2500); // external control 1
-  ext2float = constrain(map(ch4, LOW_VAL, HIGH_VAL, 500, 2500), 500, 2500); // external control 2
   // headlight toggle
   headlights = constrain(map(ch5, LOW_VAL, HIGH_VAL, -1, 3), 0, 1); // headlight toggle
 
@@ -184,10 +174,6 @@ void loop() {
 
   // ACTION TAKEN BASED VALUES / WRITE TO OUTPUTS
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  // set the gimbal location
-  ext1.writeMicroseconds(ext1float);
-  ext2.writeMicroseconds(ext2float);
 
   //logarithmic lighting
   led2 = log_lighting(ch8);

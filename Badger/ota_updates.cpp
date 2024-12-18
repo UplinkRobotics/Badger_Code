@@ -5,7 +5,7 @@
 #include <cstdio>
 #include "FFat.h"
 #include "FS.h"
-#include "zeitview.h"
+#include "badger.h"
 // WiFI variables
 char *ssid = CRAWLER_VERSION;
 char *temp = CRAWLER_NUM;

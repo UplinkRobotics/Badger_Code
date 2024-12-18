@@ -1,10 +1,10 @@
-// marten_pro.h
+// badger.h
 #ifndef MARTEN_LIBRARY
 #define MARTEN_LIBRARY
 
 /***************************************************************************************************/
 // Marten specific information for logging purposes
-#define CRAWLER_VERSION "Zeitview_1.0"
+#define CRAWLER_VERSION "Badger_1.0"
 #define CRAWLER_NUM "1"
 #define MANUFACTURE_DATE "12/16/24"
 
